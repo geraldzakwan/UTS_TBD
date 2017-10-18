@@ -8,9 +8,17 @@ def extract_link(line, delimiter):
 	return ret
 
 def extract_domain(line):
-	
+	first_slash = line.index('/')
+	i = first_slash + 2
 
-fp = open(sys.argv[1])
+	while (i < len(line)):
+		if(line[i] == '/'):
+			break
+		i = i + 1
+			
+	return line[:i]
+
+fp = open("../" + sys.argv[1])
 linelist = []
 for i, line in enumerate(fp):
     if i < int(sys.argv[2]):	
@@ -29,11 +37,15 @@ for line in linelist:
 	elif('T' in line):
 		topics.append(line)
 	elif('P' in line):
-		page.append(extract_link(line, 'P'))
+		page.append(extract_domain(extract_link(line, 'P')))
 	elif('L' in line):
-		link.append(line)
+		# link.append(extract_domain(extract_link(line, 'L')))
+		link.append(extract_domain(extract_link(line, 'L')))
 
-print(len(link) == len(set(link)))
+# print(page)
+# print()
+# print(link)
+# print(len(link) == len(set(link)))
 # print(set(link))
 # print(set(page))
-# print(set(link).intersection(set(page)))
+print(set(link).intersection(set(page)))
