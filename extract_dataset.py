@@ -43,9 +43,16 @@ for line in linelist:
 		link.append(extract_domain(extract_link(line, 'L')))
 
 # print(page)
-# print()
+print(' ')
 # print(link)
-# print(len(link) == len(set(link)))
+
 # print(set(link))
+print(' ')
 # print(set(page))
+
+print(len(link) > len(set(link)))
+print(' ')
+print(len(page) >len(set(link)))
+
+print(' ')
 print(set(link).intersection(set(page)))
