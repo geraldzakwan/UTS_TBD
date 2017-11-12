@@ -77,15 +77,12 @@ if("memetracker1.graph" in files_in_directory and "domain_mapping.txt" in files_
 
 			print "Graph model and mapping has been saved !"
 
-
 print "\n======================================"
-print "Node Mapping : "
+print "Betweenness Centrality : "
 print "======================================\n"
-for i in range(len(domain_mapping)):
-	print "%s ----> %d " % (domain_mapping[i], i)
-
-print "\n======================================"
-print "Node Iterate : "
-print "======================================\n"
-for NI in g1.Nodes():
-	print "domain %s, outdegree = %d, indegree = %d" % (domain_mapping[NI.GetId()], NI.GetOutDeg(), NI.GetInDeg())
+Nodes = snap.TIntFltH()
+Edges = snap.TIntPrFltH()
+snap.GetBetweennessCentr(g1, Nodes, Edges, 1.0)
+print "%-50s %s" % ("Domain Name", "Betweenness Centrality\n")
+for node, domain in zip(Nodes, domain_mapping):
+	print "%-50s %s" % (domain_mapping[node], Nodes[node])
