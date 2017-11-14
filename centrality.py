@@ -30,8 +30,8 @@ if("memetracker1.graph" in files_in_directory and "domain_mapping.txt" in files_
 		# load mapping
 		with open("domain_mapping.txt") as infile:
 			for line in infile:
-				if(len(line) > 1):
-					domain_mapping.append(line.replace('\n', ''))
+				domain_mapping.append(line.replace('\n', ''))
+		print "graph and mapping has been loaded succesfully! "
 	else :
 		isload = False
 else:
@@ -85,19 +85,23 @@ if(not isload):
 
 		# save the domain mapping
 		fout = open('domain_mapping.txt', 'w')
-		for item in domain_mapping:
-			fout.write(item + '\n')
-		fout.close()
+		for i in range(len(domain_mapping)-1):
+			fout.write(domain_mapping[i] + '\n')
+		fout.write(domain_mapping[len(domain_mapping)-1])
+		fout.close
 
 		print "Graph model and mapping has been saved !"
 
 if not os.path.exists('./centrality_result'):
 	os.makedirs('./centrality_result')
 
+print "domain mapping length = %d" % (len(domain_mapping))
+print "nodes = %d" % (g1.GetNodes())
 # calculating node centrality and save it as csv
 with open('./centrality_result/deg_centrality.csv', 'wb') as csvfile:
 	q = Q.PriorityQueue()
 	for NI in g1.Nodes():
+		#print "id = %d" % (NI.GetId())
 		q.put((-NI.GetInDeg(), domain_mapping[NI.GetId()]))
 	
 	writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
