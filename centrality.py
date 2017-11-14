@@ -67,14 +67,16 @@ if(not isload):
 					node_link_id = len(domain_mapping) - 1
 					g1.AddNode(node_link_id)
 
-				print "add edge from %d to %d" % (last_domain, node_link_id)
-				g1.AddEdge(last_domain, node_link_id)
+				#print "add edge from %d to %d" % (last_domain, node_link_id)
+				if(last_domain != node_link_id):
+					g1.AddEdge(last_domain, node_link_id)
 
 			if (counter == 0):
 				break
 
 	print "Graph built successfully (%d nodes, %d edges)!" % (g1.GetNodes(), g1.GetEdges())
-	choice = raw_input("Save the graph for future use (Y/N)? ")
+	#choice = raw_input("Save the graph for future use (Y/N)? ")
+	choice = 'y'
 	if choice.lower() == 'y':
 		# save the graph model
 		FOut = snap.TFOut("memetracker1.graph")
@@ -89,11 +91,11 @@ if(not isload):
 
 		print "Graph model and mapping has been saved !"
 
-if not os.path.exists('.\\centrality_result'):
-	os.makedirs('.\\centrality_result')
+if not os.path.exists('./centrality_result'):
+	os.makedirs('./centrality_result')
 
 # calculating node centrality and save it as csv
-with open('.\\centrality_result\\deg_centrality.csv', 'wb') as csvfile:
+with open('./centrality_result/deg_centrality.csv', 'wb') as csvfile:
 	q = Q.PriorityQueue()
 	for NI in g1.Nodes():
 		q.put((-NI.GetInDeg(), domain_mapping[NI.GetId()]))
@@ -101,7 +103,7 @@ with open('.\\centrality_result\\deg_centrality.csv', 'wb') as csvfile:
 	writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 	while not q.empty():
 		tup = q.get()
-		newtup = tup[0] * -1 * 0.01, tup[1]
+		newtup = (tup[0] * -100) / (g1.GetEdges()-1), tup[1]
 		writer.writerow(newtup)
 
 print "node centrality saved successfully !"
