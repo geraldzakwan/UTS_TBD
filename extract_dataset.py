@@ -22,7 +22,7 @@ def delete_front(line):
 	if(line[1] == '\t'):
 		return line[2:]
 
-fp = open("../" + sys.argv[1], encoding='utf-8')
+fp = open(sys.argv[1], encoding='utf-8')
 linelist = []
 for i, line in enumerate(fp):
     if i < int(sys.argv[2]):

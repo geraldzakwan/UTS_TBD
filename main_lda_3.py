@@ -40,9 +40,6 @@ for i, line in enumerate(fp):
         break
 fp.close()
 
-# for i in range(0, int(sys.argv[2])):
-# 	print(linelist[i])
-
 quotes = []
 time = []
 page = []
@@ -86,23 +83,11 @@ for line in linelist:
 		l_st = True
 
 print('Extracting quotes DONE')
-# print(quotes)
-# sys.exit()
-
-doc1 = "Sugar is bad to consume. My sister likes to have sugar, but not my father."
-doc2 = "My father spends a lot of time driving my sister around to dance practice."
-doc3 = "Doctors suggest that driving may cause increased stress and blood pressure."
-doc4 = "Sometimes I feel pressure to perform well at school, but my father never seems to drive my sister to do better."
-doc5 = "Health experts say that Sugar is not good for your lifestyle."
 
 # compile documents
-doc_complete = [doc1, doc2, doc3, doc4, doc5]
 doc_complete = quotes
 
 # CLEANING AND PREPROCESSING
-
-# import nltk
-# nltk.download()
 
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -116,35 +101,55 @@ def clean(doc):
     normalized = " ".join(lemma.lemmatize(word) for word in punc_free.split())
     return normalized
 
-doc_clean = [clean(doc).split() for doc in doc_complete]
+documents = [clean(doc) for doc in doc_complete]
 
-# PREPARING DOCUMENT-TERM MATRIX
+# Kalo mau niat ngurangin less frequent word ntar
 
-# Ignore warning from Gensim
 import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
+from gensim import corpora, models, similarities
+from itertools import chain
 
-# Importing Gensim
-import gensim
-from gensim import corpora
+# remove common words and tokenize
+stoplist = set('for a of the and to in'.split())
+texts = [[word for word in document.lower().split() if word not in stoplist]
+         for document in documents]
 
-# Creating the term dictionary of our courpus, where every unique term is assigned an index.
-dictionary = corpora.Dictionary(doc_clean)
+# remove words that appear only once
+all_tokens = sum(texts, [])
+tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
+texts = [[word for word in text if word not in tokens_once] for text in texts]
 
-# Converting list of documents (corpus) into Document Term Matrix using dictionary prepared above.
-doc_term_matrix = [dictionary.doc2bow(doc) for doc in doc_clean]
+# Create Dictionary.
+id2word = corpora.Dictionary(texts)
+# Creates the Bag of Word corpus.
+mm = [id2word.doc2bow(text) for text in texts]
 
-# RUNNING LDA MODEL
+# Trains the LDA models.
+lda = models.ldamodel.LdaModel(corpus=mm, id2word=id2word, num_topics=3, \
+                               update_every=1, chunksize=10000, passes=1)
 
-# Creating the object for LDA model using gensim library
-Lda = gensim.models.ldamodel.LdaModel
+# Prints the topics.
+for top in lda.print_topics():
+  print(top)
+print(' ')
 
-# Running and Trainign LDA model on the document term matrix.
-ldamodel = Lda(doc_term_matrix, num_topics=3, id2word = dictionary, passes=50)
+# Assigns the topics to the documents in corpus
+lda_corpus = lda[mm]
 
-# RESULTS
+# Find the threshold, let's set the threshold to be 1/#clusters,
+# To prove that the threshold is sane, we average the sum of all probabilities:
+scores = list(chain(*[[score for topic_id,score in topic] \
+                      for topic in [doc for doc in lda_corpus]]))
+threshold = sum(scores)/len(scores)
+print(threshold)
+print(' ')
 
-print(ldamodel.print_topics(num_topics=int(sys.argv[3]), num_words=int(sys.argv[4])))
-# ['0.168*health + 0.083*sugar + 0.072*bad,
-# '0.061*consume + 0.050*drive + 0.050*sister,
-# '0.049*pressur + 0.049*father + 0.049*sister]
+cluster1 = [j for i,j in zip(lda_corpus,documents) if i[0][1] > threshold]
+# cluster2 = [j for i,j in zip(lda_corpus,documents) if i[1][1] > threshold]
+# cluster3 = [j for i,j in zip(lda_corpus,documents) if i[2][1] > threshold]
+
+print(len(cluster1) == len(documents))
+# print(cluster1)
+# print(cluster2)
+# print(cluster3)
