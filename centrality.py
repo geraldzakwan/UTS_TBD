@@ -111,3 +111,6 @@ with open('./centrality_result/deg_centrality.csv', 'wb') as csvfile:
 		writer.writerow(newtup)
 
 print "node centrality saved successfully !"
+
+print "Plotting the graph...."
+snap.DrawGViz(g1, snap.gvlDot, "g1.png", "g1", False)
