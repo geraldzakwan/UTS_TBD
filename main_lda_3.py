@@ -127,7 +127,7 @@ mm = [id2word.doc2bow(text) for text in texts]
 
 # Trains the LDA models.
 lda = models.ldamodel.LdaModel(corpus=mm, id2word=id2word, num_topics=3, \
-                               update_every=1, chunksize=10000, passes=1)
+                               update_every=1, chunksize=10000, passes=1, minimum_probability=0)
 
 # Prints the topics.
 for top in lda.print_topics():
@@ -146,10 +146,13 @@ print(threshold)
 print(' ')
 
 cluster1 = [j for i,j in zip(lda_corpus,documents) if i[0][1] > threshold]
-# cluster2 = [j for i,j in zip(lda_corpus,documents) if i[1][1] > threshold]
-# cluster3 = [j for i,j in zip(lda_corpus,documents) if i[2][1] > threshold]
+cluster2 = [j for i,j in zip(lda_corpus,documents) if i[1][1] > threshold]
+cluster3 = [j for i,j in zip(lda_corpus,documents) if i[2][1] > threshold]
 
-print(len(cluster1) == len(documents))
-# print(cluster1)
-# print(cluster2)
-# print(cluster3)
+# print(len(cluster1) == len(documents))
+print('Cluster 1 : ')
+print(cluster1)
+print('Cluster 2 : ')
+print(cluster2)
+print('Cluster 3 : ')
+print(cluster3)
