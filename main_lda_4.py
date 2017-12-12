@@ -154,7 +154,7 @@ id2word = corpora.Dictionary(texts)
 mm = [id2word.doc2bow(text) for text in texts]
 
 # Trains the LDA models.
-lda = models.ldamodel.LdaModel(corpus=mm, id2word=id2word, num_topics=3, \
+lda = models.ldamodel.LdaModel(corpus=mm, id2word=id2word, num_topics=5, \
                                update_every=1, chunksize=10000, passes=1, minimum_probability=0)
 
 # Prints the topics.
@@ -176,11 +176,32 @@ print(' ')
 cluster1 = [j for i,j in zip(lda_corpus,documents) if i[0][1] > threshold]
 cluster2 = [j for i,j in zip(lda_corpus,documents) if i[1][1] > threshold]
 cluster3 = [j for i,j in zip(lda_corpus,documents) if i[2][1] > threshold]
+cluster4 = [j for i,j in zip(lda_corpus,documents) if i[3][1] > threshold]
+cluster5 = [j for i,j in zip(lda_corpus,documents) if i[4][1] > threshold]
 
 # print(len(cluster1) == len(documents))
 print('Cluster 1 : ')
-print(cluster1)
+print(cluster1[:5])
 print('Cluster 2 : ')
-print(cluster2)
+print(cluster2[:5])
 print('Cluster 3 : ')
-print(cluster3)
+print(cluster3[:5])
+print('Cluster 4 : ')
+print(cluster4[:5])
+print('Cluster 5 : ')
+print(cluster5[:5])
+
+# save result to external file
+output_file = "output_lda_week" + str(week) + "_" + sys.argv[2] + ".txt"
+with open("output_lda/" + output_file, 'w') as outfile:
+	# hardcoded
+	outfile.write('Cluster 1:\n')
+	outfile.write('\n'.join(cluster1))
+	outfile.write('Cluster 2:\n')
+	outfile.write('\n'.join(cluster2))
+	outfile.write('Cluster 3:\n')
+	outfile.write('\n'.join(cluster3))
+	outfile.write('Cluster 4:\n')
+	outfile.write('\n'.join(cluster4))
+	outfile.write('Cluster 5:\n')
+	outfile.write('\n'.join(cluster5))
