@@ -143,9 +143,9 @@ stoplist = set('for a of the and to in'.split())
 texts = [[word for word in document.lower().split() if word not in stoplist]
          for document in documents]
 
-# remove words that appear only once
+# remove words that appear less than 10
 all_tokens = sum(texts, [])
-tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) == 1)
+tokens_once = set(word for word in set(all_tokens) if all_tokens.count(word) < 10)
 texts = [[word for word in text if word not in tokens_once] for text in texts]
 
 # Create Dictionary.
@@ -158,7 +158,9 @@ lda = models.ldamodel.LdaModel(corpus=mm, id2word=id2word, num_topics=5, \
                                update_every=1, chunksize=10000, passes=1, minimum_probability=0)
 
 # Prints the topics.
+out_topic = ""
 for top in lda.print_topics():
+  out_topic = out_topic + str(top) + '\n'
   print(top)
 print(' ')
 
@@ -195,13 +197,27 @@ print(cluster5[:5])
 output_file = "output_lda_week" + str(week) + "_" + sys.argv[2] + ".txt"
 with open("output_lda/" + output_file, 'w') as outfile:
 	# hardcoded
+	outfile.write('Term:\n')
+	outfile.write(out_topic)
+	outfile.write('\n')
+	outfile.write('\n')
 	outfile.write('Cluster 1:\n')
 	outfile.write('\n'.join(cluster1))
+	outfile.write('\n')
+	outfile.write('\n')
 	outfile.write('Cluster 2:\n')
 	outfile.write('\n'.join(cluster2))
+	outfile.write('\n')
+	outfile.write('\n')
 	outfile.write('Cluster 3:\n')
 	outfile.write('\n'.join(cluster3))
+	outfile.write('\n')
+	outfile.write('\n')
 	outfile.write('Cluster 4:\n')
 	outfile.write('\n'.join(cluster4))
+	outfile.write('\n')
+	outfile.write('\n')
 	outfile.write('Cluster 5:\n')
 	outfile.write('\n'.join(cluster5))
+	outfile.write('\n')
+	outfile.write('\n')
